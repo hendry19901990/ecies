@@ -1,6 +1,4 @@
-
-# NOTE
-
+ 
 This implementation is direct fork of Kylom's implementation. I claim no authorship over this code apart from some minor modifications. Just works in Linux and Mac
 
 ecies implements the Elliptic Curve Integrated Encryption Scheme.
@@ -105,7 +103,6 @@ func main() {
   fmt.Printf("Message decrypt:  %s\n", string(pt)) // plain text
 
 }
-
 ```
 
 
