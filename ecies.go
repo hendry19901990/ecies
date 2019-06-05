@@ -371,7 +371,7 @@ func (prv *PrivateKey) Decrypt(c, s1, s2 []byte) (m []byte, err error) {
 func HexKey(prv string) (*PrivateKey, error) {
 	key, err := crypto.HexToECDSA(prv)
 	if err != nil {
-		nil, err
+		return nil, err
 	}
 	return ImportECDSA(key), nil
 }
