@@ -472,9 +472,6 @@ func TestSharedKeyStatic(t *testing.T) {
 }
 
 func hexKey(prv string) *PrivateKey {
-	key, err := crypto.HexToECDSA(prv)
-	if err != nil {
-		panic(err)
-	}
-	return ImportECDSA(key)
+	key, _ := HexKey(prv)
+	return key
 }
