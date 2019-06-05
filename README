@@ -1,7 +1,7 @@
+
 # NOTE
 
-This implementation is direct fork of Kylom's implementation. I claim no authorship over this code apart from some minor modifications.
-Please be aware this code **has not yet been reviewed**.
+This implementation is direct fork of Kylom's implementation. I claim no authorship over this code apart from some minor modifications. Just works in Linux and Mac
 
 ecies implements the Elliptic Curve Integrated Encryption Scheme.
 
@@ -29,8 +29,8 @@ SUPPORTED ALGORITHMS
                                            SHA-384
         ELLIPTIC CURVE                     SHA-512
              P256
-             P384		    KEY DERIVATION FUNCTION
-             P521	       NIST SP 800-65a Concatenation KDF
+             P384       KEY DERIVATION FUNCTION
+             P521        NIST SP 800-65a Concatenation KDF
 
 Curve P224 isn't supported because it does not provide a minimum security
 level of AES128 with HMAC-SHA1. According to NIST SP 800-57, the security
@@ -64,6 +64,49 @@ TEST VECTORS
 The only test vectors I've found so far date from 1993, predating AES
 and including only 163-bit curves. Therefore, there are no published
 test vectors to compare to.
+
+Install library
+```bash
+go get -u  github.com/hendry19901990/ecies
+```
+
+Sample
+
+```go
+package main
+
+import (
+  "fmt"
+  "crypto/rand"
+  "github.com/hendry19901990/ecies"
+)
+
+func main() {
+  //Load Private Key from Random
+  prv1, _ := ecies.GenerateKey(rand.Reader, ecies.DefaultCurve, nil)
+  //Load Private Key from string of sha256
+  prv2, _ := ecies.HexKey("4067d588f8866d1820c3bb1315c9ce5091b656935c8efc3220dcb51bb48460e0")
+
+  message := []byte("Hello, world.") // plain text
+  ct, err := prv1.EncryptShared(rand.Reader, &prv2.PublicKey, message, nil, nil)
+  if err != nil {
+    fmt.Println(err.Error())
+    return
+  }
+
+  fmt.Printf("Message encrypt:  %v\n", ct) // ciphered text
+
+  pt, err := prv2.Decrypt(ct, nil, nil)
+  if err != nil {
+    fmt.Println(err.Error())
+    return
+  }
+
+  fmt.Printf("Message decrypt:  %s\n", string(pt)) // plain text
+
+}
+
+```
 
 
 LICENSE
