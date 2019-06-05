@@ -293,6 +293,46 @@ func Encrypt(rand io.Reader, pub *PublicKey, m, s1, s2 []byte) (ct []byte, err e
 	return
 }
 
+func (prv *PrivateKey) EncryptShared(rand io.Reader, pub *PublicKey, m, s1, s2 []byte) (m []byte, err error) {
+	params := pub.Params
+	if params == nil {
+		if params = ParamsFromCurve(pub.Curve); params == nil {
+			err = ErrUnsupportedECIESParameters
+			return
+		}
+	}
+
+	hash := params.Hash()
+	z, err := prv.GenerateShared(pub, params.KeyLen, params.KeyLen)
+	if err != nil {
+		return
+	}
+
+	K, err := concatKDF(hash, z, s1, params.KeyLen+params.KeyLen)
+	if err != nil {
+		return
+	}
+	Ke := K[:params.KeyLen]
+	Km := K[params.KeyLen:]
+	hash.Write(Km)
+	Km = hash.Sum(nil)
+	hash.Reset()
+
+	em, err := symEncrypt(rand, params, Ke, m)
+	if err != nil || len(em) <= params.BlockSize {
+		return
+	}
+
+	d := messageTag(params.Hash, Km, em, s2)
+
+	Rb := elliptic.Marshal(pub.Curve, prv.PublicKey.X, prv.PublicKey.Y)
+	ct = make([]byte, len(Rb)+len(em)+len(d))
+	copy(ct, Rb)
+	copy(ct[len(Rb):], em)
+	copy(ct[len(Rb)+len(em):], d)
+	return    
+}
+
 // Decrypt decrypts an ECIES ciphertext.
 func (prv *PrivateKey) Decrypt(c, s1, s2 []byte) (m []byte, err error) {
 	if len(c) == 0 {
