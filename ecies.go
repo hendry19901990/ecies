@@ -293,7 +293,7 @@ func Encrypt(rand io.Reader, pub *PublicKey, m, s1, s2 []byte) (ct []byte, err e
 	return
 }
 
-func (prv *PrivateKey) EncryptShared(rand io.Reader, pub *PublicKey, m, s1, s2 []byte) (m []byte, err error) {
+func (prv *PrivateKey) EncryptShared(rand io.Reader, pub *PublicKey, m, s1, s2 []byte) (ct []byte, err error) {
 	params := pub.Params
 	if params == nil {
 		if params = ParamsFromCurve(pub.Curve); params == nil {
