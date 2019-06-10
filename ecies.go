@@ -41,6 +41,7 @@ import (
 	"math/big"
 
 	"github.com/hendry19901990/ecies/crypto"
+	"github.com/hendry19901990/ecies/common"
 )
 
 var (
@@ -330,7 +331,7 @@ func (prv *PrivateKey) EncryptShared(rand io.Reader, pub *PublicKey, m, s1, s2 [
 	copy(ct, Rb)
 	copy(ct[len(Rb):], em)
 	copy(ct[len(Rb)+len(em):], d)
-	return    
+	return
 }
 
 // Decrypt decrypts an ECIES ciphertext.
@@ -407,6 +408,25 @@ func (prv *PrivateKey) Decrypt(c, s1, s2 []byte) (m []byte, err error) {
 	return
 }
 
+func (prv *PrivateKey) PublicKeyHex() string {
+	  pubBytes := elliptic.Marshal(prv.PublicKey.Curve, prv.PublicKey.X, prv.PublicKey.Y)
+		return common.Bytes2Hex(pubBytes)
+}
+
+func Hex2PublicKey(hexkey string) (*PublicKey, error) {
+	b, err := hex.DecodeString(hexkey)
+	if err != nil {
+		return nil, errors.New("invalid hex string")
+	}
+
+	x, y := elliptic.Unmarshal(DefaultCurve, b)
+	return &PublicKey{
+		X:      x,
+		Y:      y,
+		Curve:  DefaultCurve,
+		Params: ParamsFromCurve(DefaultCurve),
+	}, nil
+}
 
 func HexKey(prv string) (*PrivateKey, error) {
 	key, err := crypto.HexToECDSA(prv)
