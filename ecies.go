@@ -42,7 +42,6 @@ import (
 	"encoding/hex"
 
 	"github.com/hendry19901990/ecies/crypto"
-	"github.com/hendry19901990/ecies/common"
 )
 
 var (
