@@ -39,6 +39,7 @@ import (
 	"hash"
 	"io"
 	"math/big"
+	"encoding/hex"
 
 	"github.com/hendry19901990/ecies/crypto"
 	"github.com/hendry19901990/ecies/common"
@@ -51,6 +52,7 @@ var (
 	ErrInvalidPublicKey           = fmt.Errorf("ecies: invalid public key")
 	ErrSharedKeyIsPointAtInfinity = fmt.Errorf("ecies: shared key is point at infinity")
 	ErrSharedKeyTooBig            = fmt.Errorf("ecies: shared key params are too big")
+	InvalidHex                    = fmt.Errorf("ecies: invalid hex string")
 )
 
 // PublicKey is a representation of an elliptic curve public key.
@@ -410,13 +412,13 @@ func (prv *PrivateKey) Decrypt(c, s1, s2 []byte) (m []byte, err error) {
 
 func (prv *PrivateKey) PublicKeyHex() string {
 	  pubBytes := elliptic.Marshal(prv.PublicKey.Curve, prv.PublicKey.X, prv.PublicKey.Y)
-		return common.Bytes2Hex(pubBytes)
+		return hex.EncodeToString(pubBytes)
 }
 
 func Hex2PublicKey(hexkey string) (*PublicKey, error) {
 	b, err := hex.DecodeString(hexkey)
 	if err != nil {
-		return nil, errors.New("invalid hex string")
+		return nil, InvalidHex
 	}
 
 	x, y := elliptic.Unmarshal(DefaultCurve, b)
