@@ -414,6 +414,10 @@ func (prv *PrivateKey) PublicKeyHex() string {
 		return hex.EncodeToString(pubBytes)
 }
 
+func (prv *PrivateKey) PrivateKeyHex() string {
+		return hex.EncodeToString(prv.D.Bytes())
+}
+
 func Hex2PublicKey(hexkey string) (*PublicKey, error) {
 	b, err := hex.DecodeString(hexkey)
 	if err != nil {
